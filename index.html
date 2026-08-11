@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Equilibrium — Cash Flow Forecasting &amp; Quantum-Inspired Payment Scheduling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wordmark">
+    <span class="wordmark-symbol">◐</span>
+    <span>Equilibrium</span>
+  </div>
+  <nav class="topbar-nav">
+    <a href="#forecast">Forecast</a>
+    <a href="#schedule">Schedule</a>
+    <a href="#how">How it works</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Cash flow forecasting for small business</p>
+      <h1>Find your business's<br><em>ground state</em> before the cash runs cold.</h1>
+      <p class="hero-sub">
+        Equilibrium projects your next 10 weeks of cash position, then reschedules
+        outstanding bills using a quantum-inspired optimizer — the same QUBO +
+        simulated annealing approach used to benchmark quantum annealers —
+        to capture early-payment discounts and avoid every dip below your safety buffer.
+      </p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="stat">
+          <span class="stat-value" id="stat-saved">—</span>
+          <span class="stat-label" id="stat-saved-label">Saved vs. naive schedule</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-risk">—</span>
+          <span class="stat-label">Risk weeks eliminated</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="stat-iterations">—</span>
+          <span class="stat-label">Annealing steps run</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <p class="mono-label">energy landscape — cooling in progress</p>
+      <canvas id="energy-canvas" width="640" height="280"></canvas>
+      <p class="mono-caption">Cost function of the payment schedule as the annealer searches for its minimum.</p>
+    </div>
+  </section>
+
+  <section id="forecast" class="panel">
+    <div class="panel-head">
+      <h2>Cash position, next 10 weeks</h2>
+      <p class="panel-sub">Naive (pay-on-due-date) schedule vs. the optimized schedule Equilibrium found.</p>
+    </div>
+    <canvas id="forecast-canvas" width="960" height="360"></canvas>
+    <div class="legend">
+      <span><i class="dot dot-baseline"></i> Naive schedule</span>
+      <span><i class="dot dot-optimized"></i> Optimized schedule</span>
+      <span><i class="dot dot-buffer"></i> Safety buffer</span>
+      <span><i class="dot dot-risk"></i> Risk week</span>
+    </div>
+  </section>
+
+  <section class="panel controls-panel">
+    <div class="control-group">
+      <label for="buffer-slider">Safety buffer target</label>
+      <input type="range" id="buffer-slider" min="500" max="4000" step="100" value="1500" />
+      <span class="mono-inline" id="buffer-value">$1,500</span>
+    </div>
+    <button id="rerun-btn" class="btn-primary">Re-run optimizer</button>
+  </section>
+
+  <section id="schedule" class="panel">
+    <div class="panel-head">
+      <h2>Payment schedule</h2>
+      <p class="panel-sub">What Equilibrium moved, and why.</p>
+    </div>
+    <div class="table-wrap">
+      <table id="schedule-table">
+        <thead>
+          <tr>
+            <th>Vendor</th>
+            <th>Amount</th>
+            <th>Due week</th>
+            <th>Naive week</th>
+            <th>Optimized week</th>
+            <th>Effect</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="how" class="panel how-panel">
+    <div class="panel-head">
+      <h2>How it works</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <span class="how-index">Encoding</span>
+        <p>Every bill's payment week is a one-hot binary decision — the exact variable shape used in QUBO (Quadratic Unconstrained Binary Optimization) formulations.</p>
+      </div>
+      <div class="how-card">
+        <span class="how-index">Energy</span>
+        <p>The cost function blends a linear term (discounts captured, penalties incurred) with a quadratic term penalizing any week the projected balance dips under the safety buffer.</p>
+      </div>
+      <div class="how-card">
+        <span class="how-index">Search</span>
+        <p>Simulated annealing explores this landscape with a cooling temperature schedule — the classical technique used to benchmark quantum annealers like D-Wave before real hardware is involved.</p>
+      </div>
+      <div class="how-card">
+        <span class="how-index">Result</span>
+        <p>The lowest-energy schedule found becomes the recommendation: the payment order and timing least likely to put the business at risk.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Built for QuantumHacks — synthetic demo data, deterministic seed for reproducible runs.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="forecast.js"></script>
+<script src="optimizer.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
