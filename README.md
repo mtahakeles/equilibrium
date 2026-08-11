@@ -9,8 +9,7 @@ annealers (like D-Wave) before or without real quantum hardware — to capture
 early-payment discounts and steer the business away from every week its balance
 would dip below a safety buffer.
 
-🔗 Live demo: *add your GitHub Pages / hosting link here*
-🎥 Demo video: *add your video link here*
+🔗 Live demo: https://mtahakeles.github.io/equilibrium/
 
 ## Running it locally
 
