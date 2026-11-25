@@ -1,22 +1,14 @@
-/* ============================================================
-   optimizer.js — Quantum-inspired payment scheduling
-   ------------------------------------------------------------
-   Each bill's "which week do I pay this" decision is a one-hot
-   binary vector over its allowed weeks — exactly the variable
-   encoding used in QUBO (Quadratic Unconstrained Binary
-   Optimization) formulations. The cost/"energy" function mixes:
-
-     1) a LINEAR term  — discount captured / penalty avoided
-     2) a QUADRATIC term — a penalty on (buffer - runningBalance)^2
-        for every week the projected balance dips below the
-        safety buffer (a squared linear function of the binary
-        variables is itself quadratic in those variables)
-
-   This is the same cost landscape D-Wave-style quantum annealers
-   are built to search. We search it classically with Simulated
-   Annealing — the standard technique used to benchmark and
-   validate QUBO solutions before/without real quantum hardware.
-   ============================================================ */
+// Payment scheduling with simulated annealing.
+//
+// Each bill is paid in one of its allowed weeks. The cost ("energy") of a
+// schedule = what the bills cost after early discounts / late penalties
+// + a squared penalty for every week the balance sits under the buffer
+// + a large fixed penalty for any negative week.
+//
+// The one-hot encoding is the same one a QUBO formulation would use (the
+// hackathon theme was quantum computing), but everything here runs
+// classically. Note the negative-balance penalty is a step, not a
+// quadratic term, so strictly speaking this isn't a pure QUBO.
 
 function computeEnergy(businessData, schedule, buffer, riskWeight = 3.5) {
   const linearCost = totalEffectiveCost(businessData.bills, schedule);

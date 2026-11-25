@@ -1,64 +1,22 @@
 # Equilibrium
 
-**Cash flow forecasting and quantum-inspired payment scheduling for small businesses.**
+A browser demo I made for the QuantumHacks hackathon. It projects a small business's cash balance 10 weeks ahead, then reschedules its bills to pick up early-payment discounts without letting the balance drop under a safety buffer.
 
-Equilibrium projects a small business's cash position over the next 10 weeks, then
-reschedules its outstanding bills using a QUBO-style cost function solved with
-Simulated Annealing — the same classical technique used to benchmark quantum
-annealers (like D-Wave) before or without real quantum hardware — to capture
-early-payment discounts and steer the business away from every week its balance
-would dip below a safety buffer.
-
-🔗 Live demo: https://mtahakeles.github.io/equilibrium/
-
-## Running it locally
-
-No build step, no dependencies. Just open `index.html` in a browser, or serve the
-folder statically:
-
-```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
+Live demo: https://mtahakeles.github.io/equilibrium/
 
 ## How it works
 
-1. **Data** (`data.js`) — a deterministic, seeded synthetic dataset: starting cash
-   balance, weekly revenue (with seasonal dips and noise), fixed weekly costs
-   (payroll, rent), and a set of vendor bills, each with a due week, an
-   early-payment discount, a late-payment penalty, and a window of weeks it's
-   allowed to be paid in.
-2. **Forecast** (`forecast.js`) — projects the weekly cash balance for any given
-   payment schedule (which week each bill is actually paid in).
-3. **Optimizer** (`optimizer.js`) — the core of the project. Each bill's payment
-   week is encoded as a one-hot binary decision — exactly the variable shape used
-   in QUBO (Quadratic Unconstrained Binary Optimization) formulations. The cost
-   ("energy") function combines:
-   - a **linear** term: discount captured or penalty incurred for paying early/late
-   - a **quadratic** term: a penalty on `(buffer − balance)²` for every week the
-     projected balance dips under the safety buffer, plus a hard penalty for any
-     negative balance
-   Simulated Annealing then searches this landscape with a cooling temperature
-   schedule, accepting worse moves early (when "hot") and only better moves later
-   (as it "cools") — converging toward a low-cost, low-risk schedule. The energy
-   trace of this search is visualized live in the dashboard's hero chart.
-4. **UI** (`index.html`, `style.css`, `app.js`) — renders the forecast, the
-   optimizer's convergence, and a side-by-side schedule comparison, with a
-   safety-buffer slider to re-run the optimizer against different risk tolerances.
+- `data.js`: seeded synthetic business with weekly revenue (with seasonal dips), fixed costs, and 12 vendor bills. Each bill has a due week, an early-payment discount, a late penalty and a window of allowed payment weeks.
+- `forecast.js`: weekly running balance for a given schedule.
+- `optimizer.js`: simulated annealing over the schedules. The cost is the bills' effective cost plus a squared penalty for weeks under the buffer and a big penalty for negative weeks.
+- `app.js`: charts (plain canvas) and a slider to change the buffer and re-run.
 
-## Project structure
+The hackathon theme was quantum computing. That's why the problem is written with a one-hot / QUBO-style encoding, the form a quantum annealer would take. The solver itself is ordinary simulated annealing on the CPU. For a problem this size, a mixed-integer solver would find the exact optimum. Annealing was the point of the exercise, not the best tool.
 
+## Run locally
+
+No build step:
+
+```bash
+python3 -m http.server 8000   # then open http://localhost:8000
 ```
-equilibrium/
-├── index.html      UI structure
-├── style.css        design system
-├── data.js          synthetic business data generator
-├── forecast.js       cash balance projection
-├── optimizer.js       QUBO-style cost function + simulated annealing
-└── app.js           wiring: runs the pipeline, draws the charts
-```
-
-## Built with
-
-HTML5 Canvas, vanilla JavaScript (no framework, no build step), CSS3,
-Simulated Annealing / QUBO-inspired combinatorial optimization.
